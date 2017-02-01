@@ -40,11 +40,11 @@ defmodule Chatbot.Server do
   end
 
   post "/webhook/384091mucfkldsgfh9p8q2375ur4p98/" do
-    IO.puts "\n=====================\n"
     conn.body_params["entry"]
     |> Enum.each(fn entry ->
+      Logger.info('#{entry["id"]} => Received a request!' )
       Enum.each(entry["messaging"], fn messaging_item ->
-        IO.puts('Handling Messaging item with sender: #{messaging_item["sender"]["id"]}')
+        Logger.info('#{messaging_item["request_id"]} => Handling Messaging item with sender: #{messaging_item["sender"]["id"]}')
         Chatbot.Client.Supervisor.start_client(messaging_item)
       end)
     end)
@@ -54,6 +54,7 @@ defmodule Chatbot.Server do
   end
 
   match _ do
+    Logger.info('No Match!')
     conn
     |> send_resp(404, "oops")
     |> halt
